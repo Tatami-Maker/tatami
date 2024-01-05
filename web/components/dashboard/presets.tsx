@@ -8,7 +8,7 @@ export const presets: Preset[] = [
     voteDuration: 172800, council: false, minToVote: 10000, quorum: 1},
 
     {title: "Early Stage DAO", details: ["100% allocation to Team", "Team decides the DAO's direction",
-    "Team issues further tokens"], price: 2, link: "Early Stage DAO preset - Documentation.md",
+    "Team issues further tokens"], price: 2, link: "Early Stage DAO Preset - Documentation.md",
     voteDuration: 129600, council: false, minToVote: 1, quorum: 1},
 
     {title: "Memecoin", details: ["89% allocation to the Allstar list", "10% allocation to liquidity pool",

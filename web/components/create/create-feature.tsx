@@ -7,12 +7,8 @@ import { FormDisplay } from "./form-display";
 import { FormReview } from "./form-review";
 import { useWallet } from "@solana/wallet-adapter-react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { FormComplete } from "./form-complete";
-
-type CreateProps = {
-    type: number
-}
 
 export type FormContextType = {
     img: Blob | undefined,
@@ -26,7 +22,17 @@ export type FormContextType = {
 
 export const FormContext = createContext<FormContextType | null>(null);
 
-export default function CreateFeature({type}: CreateProps) {
+export default function CreateFeature() {
+    const params = useParams<{type: string}>();
+    const typeParam = params.type;
+    const typeParamNum = parseInt(typeParam);
+
+    let type = 7;
+
+    if (typeParam && !isNaN(typeParamNum) && typeParamNum < 7 && typeParamNum > 0) {
+        type = parseInt(typeParam)
+    }
+
     const {connected} = useWallet();
     const router = useRouter();
 

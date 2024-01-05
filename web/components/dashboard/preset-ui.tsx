@@ -18,7 +18,7 @@ export const PresetBox = ({
     const router = useRouter();
 
     const handleClick = () => {
-      router.push(`/create/type=${type}`)
+      router.push(`/create/${type}`)
     }
   
       return (
