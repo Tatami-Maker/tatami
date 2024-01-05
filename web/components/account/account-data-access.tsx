@@ -102,11 +102,11 @@ export function useTransferSol({ address }: { address: PublicKey }) {
       } catch (error: unknown) {
         console.log('error', `Transaction failed! ${error}`, signature);
 
-        return;
+        return error;
       }
     },
-    onSuccess: (signature) => {
-      if (signature) {
+    onSuccess: (signature: string | unknown) => {
+      if (signature && typeof signature === "string") {
         transactionToast(signature);
       }
       return Promise.all([

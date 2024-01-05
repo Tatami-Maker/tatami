@@ -1,7 +1,7 @@
 'use client';
 
 import { useConnection } from '@solana/wallet-adapter-react';
-import { IconTrash } from '@tabler/icons-react';
+import { IconAntenna, IconTrash } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
 import { AppModal } from '../ui/ui-layout';
@@ -60,11 +60,11 @@ export function ClusterChecker({ children }: { children: ReactNode }) {
 }
 
 export function ClusterUiSelect() {
-  const { clusters, setCluster, cluster } = useCluster();
+  const { clusters, setCluster } = useCluster();
   return (
-    <div className="dropdown dropdown-end">
-      <label tabIndex={0} className="btn btn-primary rounded-btn">
-        {cluster.name}
+    <div className="dropdown dropdown-end z-20">
+      <label tabIndex={0}>
+        <IconAntenna size={22} className="cursor-pointer" /> 
       </label>
       <ul
         tabIndex={0}

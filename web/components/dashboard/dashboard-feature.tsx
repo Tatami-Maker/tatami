@@ -1,39 +1,52 @@
 'use client';
 
-import { AppHero } from '../ui/ui-layout';
-
-const links: { label: string; href: string }[] = [
-  { label: 'Solana Docs', href: 'https://docs.solana.com/' },
-  { label: 'Solana Faucet', href: 'https://faucet.solana.com/' },
-  { label: 'Solana Cookbook', href: 'https://solanacookbook.com/' },
-  { label: 'Solana Stack Overflow', href: 'https://solana.stackexchange.com/' },
-  {
-    label: 'Solana Developers GitHub',
-    href: 'https://github.com/solana-developers/',
-  },
-];
+import Image from 'next/image';
+import { PresetBox } from './preset-ui';
+import { presets } from './presets';
 
 export default function DashboardFeature() {
   return (
-    <div>
-      <AppHero title="gm" subtitle="Say hi to your new Solana dApp." />
+    <div className="">
       <div className="max-w-xl mx-auto py-6 sm:px-6 lg:px-8 text-center">
         <div className="space-y-2">
-          <p>Here are some helpful links to get you started.</p>
-          {links.map((link, index) => (
-            <div key={index}>
-              <a
-                href={link.href}
-                className="link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {link.label}
-              </a>
-            </div>
-          ))}
+        <div className="md:hero-content flex flex-col presets-div">
+        <div className='mt-4 flex flex-row gap-4 items-center justify-center'>
+        <p className="flex flex-col items-center">
+          <Image
+            src="/logo.png"
+            alt="icon"
+            width={48}
+            height={48}
+          />
+        </p>
+        <h1 className="text-center text-4xl text-white font-bold">
+          Tatami
+        </h1>
+        </div>
+        <p className="text-center text-seconday-text mt-2 md:mt-0 mb-8 md:mb-4">
+          The Complete Token Launch Suite
+        </p>
+        <p className="text-center font-semibold mb-2 md:mb-0 text-white">
+          Select a preset to continue
+        </p>
+        <div className='grid grid-rows-6 md:grid-rows-3 lg:grid-rows-2 grid-flow-col md:gap-8 gap-4 mb-16'>
+          {
+            presets.slice(0,6).map((preset, index) => (
+              <PresetBox 
+                key={index}
+                title={preset.title}
+                desc={preset.details}
+                price={preset.price}
+                type={index+1}
+              />
+            ))
+          }
+        </div>
+      </div>
         </div>
       </div>
     </div>
   );
 }
+
+

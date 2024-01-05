@@ -1,44 +1,47 @@
 'use client';
 
 import { WalletButton } from '../solana/solana-provider';
+import {SocialLinks} from "../socials/social-link";
 import * as React from 'react';
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 
 import Link from 'next/link';
 
-import { AccountChecker } from '../account/account-ui';
 import {
-  ClusterChecker,
   ClusterUiSelect,
   ExplorerLink,
 } from '../cluster/cluster-ui';
 import toast, { Toaster } from 'react-hot-toast';
+import Image from 'next/image';
 
 export function UiLayout({ children }: { children: ReactNode }) {
-  const pathname = 'TODO: implement me';
+  const [isNavOpen, setIsNavOpen] = React.useState(false);
 
   const pages = [
-    { label: 'Account', path: '/account' },
+    { label: 'Create Token', path: '/create?type=7' },
 
-    { label: 'Clusters', path: '/clusters' },
+    { label: 'Learn', path: '/documentation' },
+
+    { label: 'About', path: '/about' },
   ];
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="navbar bg-base-300 text-neutral-content flex-col md:flex-row space-y-2 md:space-y-0">
+    <div className="flex flex-col h-full">
+      <div className="navbar bg-back-100 border-b border-border-main text-secondary-text flex-col md:flex-row space-y-2 md:space-y-0">
         <div className="flex-1">
-          <Link className="btn btn-ghost normal-case text-xl" href="/">
-            <img
-              className="h-4 md:h-6"
+          <Link className="btn btn-ghost normal-case text-xl md:ml-8" href="/">
+            <Image
               alt="Solana Logo"
-              src="/solana-logo.png"
+              src="/logo.png"
+              width={28} height={28}
             />
+            <h1 className='text-2xl font-bold text-white'>Tatami</h1>
           </Link>
-          <ul className="menu menu-horizontal px-1 space-x-2">
+          <ul className="hidden md:menu md:menu-horizontal px-1 space-x-2">
             {pages.map(({ label, path }) => (
               <li key={path}>
                 <Link
-                  className={pathname.startsWith(path) ? 'active' : ''}
+                  className={`text-[16px]`}
                   href={path}
                 >
                   {label}
@@ -47,41 +50,59 @@ export function UiLayout({ children }: { children: ReactNode }) {
             ))}
           </ul>
         </div>
-        <div className="flex-none space-x-2">
+        <label
+          htmlFor="my-drawer"
+          className="btn-gh items-center justify-between md:hidden"
+          onClick={() => setIsNavOpen(!isNavOpen)}>
+          <div className="HAMBURGER-ICON space-y-2.5 ml-5">
+          <div className={`h-0.5 w-8 bg-white ${isNavOpen ? 'hidden' : ''}`} />
+          <div className={`h-0.5 w-8 bg-white ${isNavOpen ? 'hidden' : ''}`} />
+          <div className={`h-0.5 w-8 bg-white ${isNavOpen ? 'hidden' : ''}`} />
+        </div>
+        <div className={`absolute block h-0.5 w-8 animate-pulse bg-white ${isNavOpen ? "" : "hidden"}`}
+          style={{ transform: "rotate(45deg)" }}>
+        </div>
+        <div className={`absolute block h-0.5 w-8 animate-pulse bg-white ${isNavOpen ? "" : "hidden"}`}
+          style={{ transform: "rotate(135deg)" }}>
+            </div>
+        </label>
+        {isNavOpen && 
+          <ul className="absolute flex flex-col z-20 gap-4 top-14 p-2 shadow bg-back-300 rounded-box w-5/6">
+            {pages.map(({ label, path }) => (
+              <li key={path}>
+                <Link
+                  className={`text-[16px] `}
+                  href={path}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        }
+        <div className="flex-none space-x-4 mr-2">
+          <SocialLinks show={false}/>
           <WalletButton />
           <ClusterUiSelect />
         </div>
       </div>
-      <ClusterChecker>
-        <AccountChecker />
-      </ClusterChecker>
-      <div className="flex-grow mx-4 lg:mx-auto">
-        <Suspense
-          fallback={
-            <div className="text-center my-32">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          }
-        >
-          {children}
-        </Suspense>
-        <Toaster position="bottom-right" />
+      <div className="
+        bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#712E4B] via-transparent to-transparent 
+        bg-[length:960px_520px] bg-no-repeat"
+      >
+        <div className="bg-[url('/background.png')] bg-no-repeat ">
+          <Suspense
+            fallback={
+              <div className="text-center my-32">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            }
+          >
+            {children}
+          </Suspense>
+          <Toaster position="bottom-right" />
+        </div>
       </div>
-      <footer className="footer footer-center p-4 bg-base-300 text-base-content">
-        <aside>
-          <p>
-            Generated by{' '}
-            <a
-              className="link hover:text-white"
-              href="https://github.com/solana-developers/create-solana-dapp"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              create-solana-dapp
-            </a>
-          </p>
-        </aside>
-      </footer>
     </div>
   );
 }
@@ -189,7 +210,7 @@ export function useTransactionToast() {
           label={'View Transaction'}
           className="btn btn-xs btn-primary"
         />
-      </div>
+      </div>, {duration: 5000}
     );
   };
 }
