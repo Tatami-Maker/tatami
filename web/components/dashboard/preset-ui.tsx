@@ -1,4 +1,3 @@
-import { useWallet } from "@solana/wallet-adapter-react";
 import { IconUsersGroup, IconCoin, IconHome, IconMoodSmile, IconHeartHandshake, IconAffiliate } from "@tabler/icons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -16,16 +15,10 @@ export const PresetBox = ({
     price,
     type
   }: PresetBoxProps) => {
-    const { publicKey } = useWallet();
     const router = useRouter();
 
     const handleClick = () => {
-      if (!publicKey) {
-        // return notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
-      }
-
-      router.push(`/create?type=${type}`)
-      
+      router.push(`/create/type=${type}`)
     }
   
       return (

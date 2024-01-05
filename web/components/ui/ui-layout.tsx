@@ -18,7 +18,7 @@ export function UiLayout({ children }: { children: ReactNode }) {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
 
   const pages = [
-    { label: 'Create Token', path: '/create?type=7' },
+    { label: 'Create Token', path: '/create/type=7' },
 
     { label: 'Learn', path: '/documentation' },
 
