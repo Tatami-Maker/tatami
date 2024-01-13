@@ -2,13 +2,15 @@
 
 import { createContext, useEffect, useState } from "react";
 import {presets} from "../dashboard/presets";
-import {FormData, FormDataError, joiValidation} from "../../utils/validation";
+import {createDaoAddress, FormData, FormDataError, joiValidation} from "../../utils/validation";
 import { FormDisplay } from "./form-display";
 import { FormReview } from "./form-review";
 import { useWallet } from "@solana/wallet-adapter-react";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import { FormComplete } from "./form-complete";
+import { PublicKey } from "@solana/web3.js";
+import { useDaoAvailCheck } from "./create-data-access";
 
 export type FormContextType = {
     img: Blob | undefined,
@@ -69,6 +71,9 @@ export default function CreateFeature() {
     const [imgLink, setImgLink] = useState("");
     const [jsonLink, setJsonLink] = useState("");
     const [tx, setTx] = useState("");
+
+    const daoAddress = new PublicKey(createDaoAddress(formData.daoName));
+    const daoMutation = useDaoAvailCheck(daoAddress);
 
     const handleChange = (property: string, value: string | number | boolean) => {
         const data = {...formData};
@@ -145,7 +150,15 @@ export default function CreateFeature() {
 
             return;
         } else {
-            setPage(1)
+            const isDaoExist = await daoMutation.mutateAsync();
+
+            if (isDaoExist) {
+                errors.daoName = "DAO with this name already exists";
+                setFormError(errors);
+                return;
+            } else {
+                setPage(1)
+            }
         }
     }
 

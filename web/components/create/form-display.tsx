@@ -1,10 +1,12 @@
-import { FormDataError } from "@/utils/validation";
+import { createDaoAddress, FormDataError } from "@/utils/validation";
 import { IconArrowBadgeDownFilled, IconArrowBadgeUpFilled } from "@tabler/icons-react"
 import Link from "next/link"
 import { useContext, useState } from "react";
 import { Preset } from "../dashboard/presets";
 import FormComponent, { FormButton, FormInput, FormMinHeading, FormTopHeading } from "./form-component"
 import {FormContext, FormContextType} from "./create-feature";
+import { useDaoAvailCheck } from "./create-data-access";
+import { PublicKey } from "@solana/web3.js";
 
 type FormDisplayProps = {
     preset: Preset,
@@ -18,6 +20,9 @@ type FormDisplayProps = {
 export function FormDisplay({preset, handleChange, handleForm, handleImg, formError, setFormError}: FormDisplayProps) {
     const [displayAdvSettings, setDisplayAdvSettings] = useState(false);
     const {formData, type} = useContext(FormContext) as FormContextType;
+
+    const daoAddress = new PublicKey(createDaoAddress(formData.daoName));
+    const daoMutation = useDaoAvailCheck(daoAddress);
 
     return (
         <div className="flex flex-col md:flex-row w-full">
@@ -98,7 +103,9 @@ export function FormDisplay({preset, handleChange, handleForm, handleImg, formEr
                 }
             </FormComponent>
 
-            <FormButton title="Save & Continue" onClick={handleForm} addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043]"/>
+            <FormButton title={daoMutation.isPending ? "Validating.." : "Save & Continue"} onClick={handleForm} 
+                addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043]" 
+                disabled={daoMutation.isPending}/>
             </div>
         </div>
     )

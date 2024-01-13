@@ -1,5 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import * as Joi from "joi";
+import { REALMS_PROGRAM_ID } from "./constants";
 
 export interface FormData {
     name: string,
@@ -45,6 +46,6 @@ export const createDaoAddress = (daoName: string) => {
         Buffer.from("governance"),
         Buffer.from(daoName)
     ],
-        new PublicKey("GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw")
+        REALMS_PROGRAM_ID
     )[0].toBase58();
 }

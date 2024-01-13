@@ -21,6 +21,7 @@ import { FormData } from '@/utils/validation';
 import { useTransactionToast } from '../ui/ui-layout';
 import { useContext } from 'react';
 import { FormContext, FormContextType } from './create-feature';
+import { REALMS_PROGRAM_ID } from '@/utils/constants';
 
 type CreateMetadataProp = {
   img: File, 
@@ -115,6 +116,27 @@ export function useCreateMetadata({
   });
 }
 
+export function useDaoAvailCheck(address: PublicKey) {
+  const {connection} = useConnection();
+
+  return useMutation({
+    mutationKey: ['find-dao', {endpoint: connection.rpcEndpoint, address}],
+    mutationFn: async() => {
+      try {
+        const account = await connection.getAccountInfo(address);
+        if (account) {
+          return true
+        } else {
+          return false
+        }
+      } catch(e) {
+        console.log(e);
+        return false;
+      }
+    }
+  })  
+}
+
 async function uploadImg(img: File, umi: Umi) {
   const genericImg = await createGenericFileFromBrowserFile(img);
   return await umi.uploader.upload([genericImg], {
@@ -151,7 +173,7 @@ async function sendInitTransaction(
   const programId = new PublicKey("HrKLeJB6yoSWkFzVSfsg8Yi3Zs4PKZ7qqjkMz978qqZv");
   const provider = new AnchorProvider(connection, anchorWallet, {commitment: "confirmed"});
   const program = new Program<TatamiV2>(idl as TatamiV2, programId, provider);
-  const realmProgram = new PublicKey("GovER5Lthms3bLBqWub97yVrMmEogzX7xNjdXpPPCVZw");
+  const realmProgram = REALMS_PROGRAM_ID;
   const metadataProgram = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
   
   const [config] = PublicKey.findProgramAddressSync([Buffer.from("tatami-config")], programId);
