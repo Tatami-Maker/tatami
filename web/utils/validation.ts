@@ -10,7 +10,8 @@ export interface FormData {
     quorum: number,
     minToVote: number,
     voteDuration: number,
-    council: boolean
+    council: boolean,
+    allocation: number[]
 };
 
 export interface FormDataError {
@@ -26,7 +27,8 @@ export const joiValidation = (data: FormData) => {
         quorum: Joi.number().integer().min(1).max(100).required(),
         minToVote: Joi.number().integer().min(1).required(),
         voteDuration: Joi.number().integer().min(1).required(),
-        council: Joi.bool().required()
+        council: Joi.bool().required(),
+        allocation: Joi.array().items(Joi.number()).length(3)
     });
 
     return schema.validate(data);

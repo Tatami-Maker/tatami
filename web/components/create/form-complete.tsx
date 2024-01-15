@@ -20,11 +20,11 @@ export function FormComplete() {
                 <div className="my-4">
                     <Link href={`https://solscan.io/account/${mint}?cluster=${cluster.network}`} target="_blank" 
                       rel="noopener noreferrer" passHref>
-                        <FormButton title="View Token" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043]"/>
+                        <FormButton title="View Token" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] py-3"/>
                     </Link>
                     <Link href={`https://app.realms.today/dao/${createDaoAddress(formData.daoName)}?cluster=${cluster.network}`} 
                       target="_blank" rel="noopener noreferrer" passHref>
-                        <FormButton title="View DAO" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] ml-4"/>
+                        <FormButton title="View DAO" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] ml-4 py-3"/>
                     </Link>
                 </div>
             </div>

@@ -1,31 +1,29 @@
-import { createDaoAddress, FormDataError } from "@/utils/validation";
+import { FormDataError } from "@/utils/validation";
 import { IconArrowBadgeDownFilled, IconArrowBadgeUpFilled } from "@tabler/icons-react"
 import Link from "next/link"
 import { useContext, useState } from "react";
 import { Preset } from "../dashboard/presets";
 import FormComponent, { FormButton, FormInput, FormMinHeading, FormTopHeading } from "./form-component"
 import {FormContext, FormContextType} from "./create-feature";
-import { useDaoAvailCheck } from "./create-data-access";
-import { PublicKey } from "@solana/web3.js";
+import { UseMutationResult } from "@tanstack/react-query";
 
 type FormDisplayProps = {
     preset: Preset,
     formError: FormDataError,
-    setFormError: (error: FormDataError) => void,
     handleChange: (property: string, e: string | number | boolean) => void,
     handleImg: (img: File | undefined) => void,
-    handleForm: () => void
+    handleForm: () => void,
+    daoMutation: UseMutationResult<boolean, Error, void, unknown>
 }
 
-export function FormDisplay({preset, handleChange, handleForm, handleImg, formError, setFormError}: FormDisplayProps) {
+export function FormDisplay(
+    {preset, handleChange, handleForm, handleImg, formError, daoMutation}: FormDisplayProps
+) {
     const [displayAdvSettings, setDisplayAdvSettings] = useState(false);
     const {formData, type} = useContext(FormContext) as FormContextType;
 
-    const daoAddress = new PublicKey(createDaoAddress(formData.daoName));
-    const daoMutation = useDaoAvailCheck(daoAddress);
-
     return (
-        <div className="flex flex-col md:flex-row w-full">
+        <div className="flex flex-col md:flex-row w-full mb-16">
             <div className="create-main w-full md:w-3/4 flex flex-col items-center gap-6 z-10 mt-8">
             <FormTopHeading title="Token Details" />
             
@@ -104,7 +102,7 @@ export function FormDisplay({preset, handleChange, handleForm, handleImg, formEr
             </FormComponent>
 
             <FormButton title={daoMutation.isPending ? "Validating.." : "Save & Continue"} onClick={handleForm} 
-                addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043]" 
+                addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] py-3 px-8" 
                 disabled={daoMutation.isPending}/>
             </div>
         </div>

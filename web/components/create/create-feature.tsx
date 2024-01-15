@@ -11,6 +11,7 @@ import { useParams, useRouter } from "next/navigation";
 import { FormComplete } from "./form-complete";
 import { PublicKey } from "@solana/web3.js";
 import { useDaoAvailCheck } from "./create-data-access";
+import { FormLaunch } from "./form-launch";
 
 export type FormContextType = {
     img: Blob | undefined,
@@ -63,7 +64,8 @@ export default function CreateFeature() {
         quorum: preset.quorum,
         minToVote: preset.minToVote,
         council: preset.council,
-        voteDuration: preset.voteDuration
+        voteDuration: preset.voteDuration,
+        allocation: preset.allocation
     });
     const [formError, setFormError] = useState<FormDataError>(defaultErrors);
 
@@ -182,15 +184,18 @@ export default function CreateFeature() {
     return (
         <FormContext.Provider value={{formData, img, imgFile, type, mint, setPage, setMint}}>
             {   
-                page === 2 ? 
+                page === 3 ?
                     <FormComplete />
+                : 
+                page === 2 ? 
+                    <FormLaunch imgLink={imgLink} jsonLink={jsonLink} tx={tx} buttonText={buttonText}
+                    setImgLink={setImgLink} setJsonLink={setJsonLink} setTx={setTx} setButtonText={setButtonText}/>
                 :    
                 page === 1 ?
-                    <FormReview imgLink={imgLink} jsonLink={jsonLink} tx={tx} buttonText={buttonText}
-                    setImgLink={setImgLink} setJsonLink={setJsonLink} setTx={setTx} setButtonText={setButtonText} />
+                    <FormReview />
                 :
-                    <FormDisplay preset={preset} formError={formError} setFormError={setFormError} 
-                    handleChange={handleChange} handleForm={handleForm} handleImg={handleImg} />
+                    <FormDisplay preset={preset} formError={formError} handleChange={handleChange}
+                    handleForm={handleForm} handleImg={handleImg} daoMutation={daoMutation}/>
             }
         </FormContext.Provider>
     )

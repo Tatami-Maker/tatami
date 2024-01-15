@@ -28,6 +28,7 @@
     "@tanstack/react-query-next-experimental": "5.8.4",
     "bs58": "5.0.0",
     "buffer": "6.0.3",
+    "chart.js": "^4.4.1",
     "daisyui": "3.9.3",
     "encoding": "0.1.13",
     "joi": "^17.11.0",

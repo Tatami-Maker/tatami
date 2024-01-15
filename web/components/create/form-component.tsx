@@ -1,16 +1,18 @@
+import Image from "next/image"
 import { ChangeEvent, ReactNode } from "react"
 
 type FormElements = {
     title: string,
     meta: string,
-    children: ReactNode
+    children: ReactNode,
+    addButton?: boolean
 }
 
 type FormInputProps = {
     name: string,
     placeholder: string,
     type: string,
-    addClass: string,
+    addClass?: string,
     value?: string | number,
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void,
     readonly?: boolean,
@@ -21,15 +23,25 @@ type FormButtonProps = {
     title: string,
     onClick?: () => void,
     disabled?: boolean,
-    addClass?: string
+    addClass?: string,
 }
 
-export default function FormComponent({title, meta, children}: FormElements) {
+export default function FormComponent({title, meta, children, addButton}: FormElements) {
     return (
-        <div className="bg-back-200 border-[1px] border-border-form rounded-lg w-11/12  md:w-7/12 overflow-hidden">
+        <div className="bg-back-200 border-[1px] border-border-form rounded-lg w-11/12  lg:w-7/12 overflow-hidden">
             <div className="p-4">
-                <h2 className="text-lg font-semibold text-white">{title}</h2>
-                <p className="text-sm text-secondary-text">{meta}</p>
+                <div className="flex flex-row w-full justify-between items-center">
+                    <div>
+                        <h2 className="text-lg font-semibold text-white">{title}</h2>
+                        <p className="text-sm text-secondary-text">{meta}</p>
+                    </div>
+                    {addButton ?
+                        <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer">
+                            Upload CSV
+                        </h5>
+                        : ""
+                    }
+                </div>
                 <hr className='border-[#2C2C5A] border-b-[1px] my-3'/>
                 {children}
             </div>
@@ -61,7 +73,7 @@ export function FormMinText({title}: {title: string | number}) {
 
 export function FormTopHeading({title}: {title: string}) {
     return (
-        <div className="bg-back-200 border-[1px] border-border-form rounded-lg w-11/12 md:w-7/12 overflow-hidden">
+        <div className="bg-back-200 border-[1px] border-border-form rounded-lg w-11/12 lg:w-7/12 overflow-hidden">
             <div className="h-2 bg-gradient-to-r from-[#F3BC51] to-[#936100]"></div>
             <div className="p-4">
             <h2 className="text-[22px] font-semibold text-white">{title}</h2>
@@ -73,12 +85,37 @@ export function FormTopHeading({title}: {title: string}) {
 
 export function FormButton({title, onClick, disabled, addClass}: FormButtonProps) {
     return (
-        <button className={`text-sm px-8 py-3 rounded-lg mb-8 font-medium text-secondary-text
-            hover:cursor-pointer hover:bg-[#3b3b62]
+        <button className={`rounded-lg font-medium text-secondary-text
+            hover:cursor-pointer hover:bg-[#3b3b62] text-sm
             ${addClass} disabled:bg-none disabled:border-[1px] disabled:border-[#2C2C5A] 
             disabled:text-secondary-text disabled:bg-[#1E2043]`} 
             onClick={onClick} disabled={disabled}>
             {title}
         </button>
+    )
+}
+
+export function FormAllocationTab(
+    {tabName, tabIx, tabVal, changeTabVal}: 
+    {tabName: string, tabIx: number, tabVal: number, changeTabVal: (i: number, n: number) => void}
+) {
+    return (
+        <div className="flex flex-col lg:flex-row gap-4 items-center lg:items-end">
+            <div className="flex flex-col">
+            <h6 className="text-sm text-white font-medium mb-1">Name</h6>
+            <input type="text" className="bg-border-form text-white font-light
+                rounded-md h-10 text-[13px] p-4" value={tabName} disabled/>
+            </div>
+            <div className="flex flex-col">
+            <h6 className="text-sm text-white font-medium mb-1">Percentage</h6>
+            <input type="number" className="bg-border-form text-white font-light
+                rounded-md h-10 text-[13px] p-4" value={tabVal} 
+                onChange={(e) => changeTabVal(tabIx, parseInt(e.target.value))}/> 
+            </div>
+            <h5 className="mr-2 text-sm py-2 px-4 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer"
+            >
+                Delete <Image src="/delete.png" alt="delete" width={14} height={20} className="inline-block ml-2" />
+            </h5>
+        </div>
     )
 }
