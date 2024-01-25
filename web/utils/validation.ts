@@ -5,7 +5,7 @@ import { REALMS_PROGRAM_ID } from "./constants";
 export interface FormData {
     name: string,
     symbol: string,
-    supply: number,
+    supply: bigint,
     daoName: string,
     quorum: number,
     minToVote: number,
@@ -19,10 +19,13 @@ export interface FormDataError {
 }
 
 export const joiValidation = (data: FormData) => {
+    const dataAny: any = {...data};
+    dataAny.supply = dataAny.supply.toString(10);
+
     const schema = Joi.object({
         name: Joi.string().min(4).max(40).required(),
         symbol: Joi.string().alphanum().min(3).max(5).required(),
-        supply: Joi.number().integer().min(1).required(),
+        supply: Joi.string().required(),
         daoName: Joi.string().min(4).max(40).required(),
         quorum: Joi.number().integer().min(1).max(100).required(),
         minToVote: Joi.number().integer().min(1).required(),
@@ -31,7 +34,7 @@ export const joiValidation = (data: FormData) => {
         allocation: Joi.array().items(Joi.number()).length(3)
     });
 
-    return schema.validate(data);
+    return schema.validate(dataAny);
 }
 
 export const getImgBuff = async(img: Blob) => {

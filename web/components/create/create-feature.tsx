@@ -59,7 +59,7 @@ export default function CreateFeature() {
     const [formData, setFormData] = useState<FormData>({
         name: "",
         symbol: "",
-        supply: type == 5 ? 100 : 0,
+        supply: type == 5 ? BigInt(100) : BigInt(0),
         daoName: "",
         quorum: preset.quorum,
         minToVote: preset.minToVote,
@@ -77,7 +77,7 @@ export default function CreateFeature() {
     const daoAddress = new PublicKey(createDaoAddress(formData.daoName));
     const daoMutation = useDaoAvailCheck(daoAddress);
 
-    const handleChange = (property: string, value: string | number | boolean) => {
+    const handleChange = (property: string, value: string | number | bigint | boolean) => {
         const data = {...formData};
         
         switch(property) {
@@ -92,7 +92,7 @@ export default function CreateFeature() {
                 break;
 
             case "supply":
-                if (typeof value !== "number") return;
+                if (typeof value !== "bigint") return;
                 data[property] = value;
                 break;
 
@@ -152,6 +152,12 @@ export default function CreateFeature() {
 
             return;
         } else {
+            if (formData.supply < BigInt(1)) {
+                errors.supply = "The supply can't be lower than 1";
+                setFormError(errors);
+                return;
+            }
+            
             const isDaoExist = await daoMutation.mutateAsync();
 
             if (isDaoExist) {

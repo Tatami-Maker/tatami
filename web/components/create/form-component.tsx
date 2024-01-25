@@ -5,7 +5,8 @@ type FormElements = {
     title: string,
     meta: string,
     children: ReactNode,
-    addButton?: boolean
+    addButton?: boolean,
+    handleFn?: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 type FormInputProps = {
@@ -26,7 +27,14 @@ type FormButtonProps = {
     addClass?: string,
 }
 
-export default function FormComponent({title, meta, children, addButton}: FormElements) {
+type DeleteButtonProps = {
+    fn: (n: number) => void,
+    index: number, 
+    title: string,
+    addClass?: string 
+}
+
+export default function FormComponent({title, meta, children, addButton, handleFn}: FormElements) {
     return (
         <div className="bg-back-200 border-[1px] border-border-form rounded-lg w-11/12  lg:w-7/12 overflow-hidden">
             <div className="p-4">
@@ -35,10 +43,15 @@ export default function FormComponent({title, meta, children, addButton}: FormEl
                         <h2 className="text-lg font-semibold text-white">{title}</h2>
                         <p className="text-sm text-secondary-text">{meta}</p>
                     </div>
-                    {addButton ?
-                        <h5 className="mr-2 text-sm py-2 px-6 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer">
-                            Upload CSV
-                        </h5>
+                    {addButton && handleFn ?
+                        <div className="">
+                            <input type="file" accept=".csv" id="csv-button" hidden
+                                onChange={handleFn}
+                            />
+                            <label htmlFor="csv-button" className="mr-2 text-sm py-2 px-6 rounded-lg 
+                                border-[1px] border-[#2C2C5A] cursor-pointer">Upload CSV</label>
+                        </div>
+                        
                         : ""
                     }
                 </div>
@@ -95,27 +108,53 @@ export function FormButton({title, onClick, disabled, addClass}: FormButtonProps
     )
 }
 
-export function FormAllocationTab(
-    {tabName, tabIx, tabVal, changeTabVal}: 
-    {tabName: string, tabIx: number, tabVal: number, changeTabVal: (i: number, n: number) => void}
+export function DeleteButton({fn, index, title, addClass}: DeleteButtonProps) {
+    return (
+        <h5 className={`mr-2 text-sm py-2 px-4 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer ${addClass}`}
+            onClick={() => fn(index)}
+        >
+            {title} <Image src="/delete.png" alt="delete" width={14} height={20} className="inline-block ml-2" />
+        </h5>
+    )
+}
+
+export function FormAllocationTabs(
+    {tabName, tabIx, tabVal, changeTabVal, total}: 
+    {tabName: string, tabIx: number, tabVal: number, total: bigint, changeTabVal: (i: number, n: number) => void}
 ) {
+
+    let tokenValue: BigInt;
+    let percentage = tabVal ? tabVal : 0;
+
+    if (tabIx === 2) {
+        tokenValue = total - (total * BigInt(100-percentage) / BigInt(100))
+    } else {
+        try {
+            tokenValue = total * BigInt(percentage) / BigInt(100)
+        } catch {
+            tokenValue = BigInt(0);
+        }
+    }
+    
     return (
         <div className="flex flex-col lg:flex-row gap-4 items-center lg:items-end">
             <div className="flex flex-col">
-            <h6 className="text-sm text-white font-medium mb-1">Name</h6>
-            <input type="text" className="bg-border-form text-white font-light
-                rounded-md h-10 text-[13px] p-4" value={tabName} disabled/>
+                <h6 className="text-sm text-white font-medium mb-1">Name</h6>
+                <input type="text" className="bg-border-form text-white font-light
+                    rounded-md h-10 text-[13px] p-4" value={tabName} disabled/>
             </div>
             <div className="flex flex-col">
-            <h6 className="text-sm text-white font-medium mb-1">Percentage</h6>
-            <input type="number" className="bg-border-form text-white font-light
-                rounded-md h-10 text-[13px] p-4" value={tabVal} 
-                onChange={(e) => changeTabVal(tabIx, parseInt(e.target.value))}/> 
+                <h6 className="text-sm text-white font-medium mb-1">Percentage</h6>
+                <input type="number" className="bg-border-form text-white font-light
+                    rounded-md h-10 text-[13px] p-4" value={tabVal} 
+                    onChange={(e) => changeTabVal(tabIx, parseInt(e.target.value))}/> 
             </div>
-            <h5 className="mr-2 text-sm py-2 px-4 rounded-lg border-[1px] border-[#2C2C5A] cursor-pointer"
-            >
-                Delete <Image src="/delete.png" alt="delete" width={14} height={20} className="inline-block ml-2" />
-            </h5>
+            <div className="flex flex-col">
+                <h6 className="text-sm text-white font-medium mb-1">Tokens</h6>
+                <input type="number" className="bg-border-form text-white font-light
+                    rounded-md h-10 text-[13px] p-4" value={tokenValue.toString(10)} disabled
+                /> 
+            </div>
         </div>
     )
 }

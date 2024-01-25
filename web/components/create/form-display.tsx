@@ -10,7 +10,7 @@ import { UseMutationResult } from "@tanstack/react-query";
 type FormDisplayProps = {
     preset: Preset,
     formError: FormDataError,
-    handleChange: (property: string, e: string | number | boolean) => void,
+    handleChange: (property: string, e: string | number | bigint | boolean) => void,
     handleImg: (img: File | undefined) => void,
     handleForm: () => void,
     daoMutation: UseMutationResult<boolean, Error, void, unknown>
@@ -47,8 +47,8 @@ export function FormDisplay(
                 onChange={(e) => handleChange('symbol', e.target.value)} errorMsg={formError.symbol}/>
                 
                 <FormInput name="Token Supply" placeholder="e.g. 100000" type="number" addClass="w-1/2" 
-                value={formData.supply ? formData.supply: ''} 
-                onChange={(e) => handleChange('supply', parseInt(e.target.value))} 
+                value={formData.supply ? formData.supply.toString(10) : ''} 
+                onChange={(e) => handleChange('supply', BigInt(e.target.value))} 
                 readonly={type == 5 ? true : false} errorMsg={formError.supply}/>
 
                 <FormMinHeading title="Token Symbol" />

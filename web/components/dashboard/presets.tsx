@@ -5,7 +5,7 @@ export const presets: Preset[] = [
 
     {title: "Investment DAO", details: ["2% allocation to Team", "98% allocation to DAO treasury",
     "DAO governed by investors"], price: 2, link: "Investment DAO Preset.md",
-    voteDuration: 172800, council: false, minToVote: 10000, quorum: 1, allocation: [2,0,98]},
+    voteDuration: 172800, council: false, minToVote: 1, quorum: 1, allocation: [2,0,98]},
 
     {title: "Early Stage DAO", details: ["100% allocation to Team", "Team decides the DAO's direction",
     "Team issues further tokens"], price: 2, link: "Early Stage DAO Preset - Documentation.md",
@@ -21,7 +21,7 @@ export const presets: Preset[] = [
 
     {title: "Protocol DAO", details: ["60% allocation to the team", "40% allocation to DAO", 
     "Team issues further tokens"], price: 2, link: "Protocol DAO.md",
-    voteDuration: 259200, council: true, minToVote: 10000, quorum: 30, allocation: [60,0,40]},
+    voteDuration: 259200, council: true, minToVote: 1, quorum: 30, allocation: [60,0,40]},
     
     {title: "Generic", details: [], price: 2, link: '',
     voteDuration: 216000, council: true, minToVote: 1, quorum: 10, allocation: [5,15,80]},

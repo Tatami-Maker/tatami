@@ -24,7 +24,7 @@ export function FormReview() {
                         <div className="value w-1/2 md:w-4/6">
                             <FormMinText title={formData.name} />
                             <FormMinText title={formData.symbol} />
-                            <FormMinText title={`${formData.supply} ${formData.symbol}`} />
+                            <FormMinText title={`${formData.supply.toString(10)} ${formData.symbol}`} />
                             <div className="mt-3">
                                 <Image src={window.URL.createObjectURL(img as Blob)} alt="token logo" width={34} height={34}/>
                             </div>

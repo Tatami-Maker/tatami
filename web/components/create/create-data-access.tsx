@@ -14,7 +14,7 @@ import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 import { createGenericFileFromBrowserFile, createGenericFileFromJson, Umi } from '@metaplex-foundation/umi';
 import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters';
 import { bundlrUploader } from '@metaplex-foundation/umi-uploader-bundlr';
-import { AnchorProvider, BN, Program } from '@coral-xyz/anchor';
+import { AnchorProvider, BN, Program, utils } from '@coral-xyz/anchor';
 import idl from "../../utils/idl/tatami.json";
 import {TatamiV2} from "../../utils/idl/tatami";
 import { FormData } from '@/utils/validation';
@@ -102,7 +102,7 @@ export function useCreateMetadata({
         
         setButtonText("Token Created");
         await timer(1200);
-        setPage(2);
+        setPage(3);
         return tx;
       } catch(error) {
         return emitError(error);
@@ -180,10 +180,11 @@ async function sendInitTransaction(
   const [vault] = PublicKey.findProgramAddressSync([Buffer.from("tatami-vault")], programId);
   
   const mint = Keypair.generate();
+  const tokenAccount = utils.token.associatedAddress({mint: mint.publicKey, owner: anchorWallet.publicKey});
   setMint(mint.publicKey.toBase58());
   const councilMint = Keypair.generate();
 
-  const {name, symbol, daoName, quorum, minToVote, council, voteDuration} = formData;
+  const {name, symbol, daoName, supply, quorum, minToVote, council, voteDuration} = formData;
 
   const [metadata] = PublicKey.findProgramAddressSync([
     Buffer.from("metadata"),
@@ -233,17 +234,20 @@ async function sendInitTransaction(
     governance.toBytes()
   ], realmProgram);
 
-  const initProjectIx = await program.methods.initProject(name, symbol, uri)
+  // Initiate Project
+  const initProjectIx = await program.methods.initProject(name, symbol, uri,new BN(supply))
     .accounts({
       config,
       project,
       mint: mint.publicKey,
+      tokenAccount,
       metadata,
       metadataProgram,
       vault
     })
     .instruction()
 
+  // Initiate DAO
   const initDaoIx = await program.methods.initializeDao(
     daoName, 
     new BN(minToVote),
@@ -265,6 +269,8 @@ async function sendInitTransaction(
     project
   })
   .instruction();
+
+  // Mint Supply
 
   const {transaction, latestBlockhash} = await createTransaction({
     ixs: [initProjectIx, initDaoIx], connection, payer: wallet.publicKey as PublicKey
