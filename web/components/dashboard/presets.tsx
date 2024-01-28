@@ -26,15 +26,3 @@ export const presets: Preset[] = [
     {title: "Generic", details: [], price: 2, link: '',
     voteDuration: 216000, council: true, minToVote: 1, quorum: 10, allocation: [5,15,80]},
 ]
-
-export type Preset = {
-    title: string,
-    details: string[],
-    price: number,
-    link: string,
-    voteDuration: number,
-    council: boolean,
-    minToVote: number,
-    quorum: number,
-    allocation: number[]
-}

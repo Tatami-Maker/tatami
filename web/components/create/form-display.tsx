@@ -1,10 +1,9 @@
-import { FormDataError } from "@/utils/validation";
+import {FormDataError } from "@/app/utils/validation";
 import { IconArrowBadgeDownFilled, IconArrowBadgeUpFilled } from "@tabler/icons-react"
 import Link from "next/link"
 import { useContext, useState } from "react";
-import { Preset } from "../dashboard/presets";
 import FormComponent, { FormButton, FormInput, FormMinHeading, FormTopHeading } from "./form-component"
-import {FormContext, FormContextType} from "./create-feature";
+import {FormContext} from "./create-feature";
 import { UseMutationResult } from "@tanstack/react-query";
 
 type FormDisplayProps = {
@@ -19,6 +18,7 @@ type FormDisplayProps = {
 export function FormDisplay(
     {preset, handleChange, handleForm, handleImg, formError, daoMutation}: FormDisplayProps
 ) {
+    const [displayTokenAdvSettings, setDisplayTokenAdvSettings] = useState(false);
     const [displayAdvSettings, setDisplayAdvSettings] = useState(false);
     const {formData, type} = useContext(FormContext) as FormContextType;
 
@@ -47,9 +47,10 @@ export function FormDisplay(
                 onChange={(e) => handleChange('symbol', e.target.value)} errorMsg={formError.symbol}/>
                 
                 <FormInput name="Token Supply" placeholder="e.g. 100000" type="number" addClass="w-1/2" 
-                value={formData.supply ? formData.supply.toString(10) : ''} 
-                onChange={(e) => handleChange('supply', BigInt(e.target.value))} 
-                readonly={type == 5 ? true : false} errorMsg={formError.supply}/>
+                    value={formData.supply ? formData.supply.toString(10) : ''} 
+                    onChange={(e) => handleChange('supply', BigInt(e.target.value))} 
+                    readonly={type == 5 ? true : false} errorMsg={formError.supply}
+                />
 
                 <FormMinHeading title="Token Symbol" />
                 <p className="text-sm text-[#9393A9] mb-2">.png or .jpg upto 1 MB in size</p>
@@ -58,6 +59,21 @@ export function FormDisplay(
                     onChange={(e) => handleImg(e.target.files ? e.target.files[0] : undefined)}
                 />
                 <p className="text-[#cc3300] text-sm mt-2 font-normal">{formError.img}</p>
+
+                <h5 className="mt-4 mb-1 font-medium cursor-pointer text-white" 
+                    onClick={() => {setDisplayTokenAdvSettings(!displayTokenAdvSettings)}}
+                >
+                    Advanced Settings 
+                    {displayTokenAdvSettings ? <IconArrowBadgeDownFilled className="inline"/> 
+                    : <IconArrowBadgeUpFilled className="inline"/>}
+                </h5>
+                {
+                    displayTokenAdvSettings &&
+                    <FormInput name="Decimals" placeholder="e.g. 4" type="number" addClass="w-1/2" value={formData.decimals}
+                        onChange={(e) => handleChange('decimals', parseInt(e.target.value))} errorMsg={formError.decimals}
+                        readonly={type == 5 ? true : false}
+                    />
+                }
             </FormComponent>
             
             <FormComponent title="DAO Details" meta="Name the DAO and edit the config">

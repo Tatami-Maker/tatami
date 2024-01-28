@@ -15,29 +15,16 @@ import { createGenericFileFromBrowserFile, createGenericFileFromJson, Umi } from
 import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters';
 import { bundlrUploader } from '@metaplex-foundation/umi-uploader-bundlr';
 import { AnchorProvider, BN, Program, utils } from '@coral-xyz/anchor';
-import idl from "../../utils/idl/tatami.json";
-import {TatamiV2} from "../../utils/idl/tatami";
-import { FormData } from '@/utils/validation';
+import idl from "../../app/utils/idl/tatami.json";
+import {TatamiV2} from "../../app/utils/idl/tatami";
 import { useTransactionToast } from '../ui/ui-layout';
 import { useContext } from 'react';
-import { FormContext, FormContextType } from './create-feature';
-import { REALMS_PROGRAM_ID } from '@/utils/constants';
-
-type CreateMetadataProp = {
-  img: File, 
-  address: PublicKey,
-  formData: FormData,
-  isImg: string,
-  isJson: string,
-  isTx: string,
-  setButtonText: (s: string) => void,
-  setImgLink: (s: string) => void,
-  setJsonLink: (s: string) => void,
-  setTx: (s: string) => void
-}
+import { FormContext } from './create-feature';
+import { REALMS_PROGRAM_ID } from '@/app/utils/constants';
+import { createRecord } from '@/app/actions/create-record';
 
 export function useCreateMetadata({
-  img, address, setButtonText, setImgLink, setJsonLink, setTx, formData, isImg, isJson, isTx
+  img, address, setButtonText, setImgLink, setJsonLink, setTx, setDbId, formData, isImg, isJson, isTx, isDbId
 } : CreateMetadataProp) {
   const {connection} = useConnection();
   const wallet = useWallet();
@@ -48,7 +35,10 @@ export function useCreateMetadata({
 
   return useMutation({
     mutationKey: ['create-metadata', { endpoint: connection.rpcEndpoint, address }],
-    mutationFn: async() => {
+    mutationFn: async(
+      {teamWallet,recipients, allocation}:
+      MutationProps
+    ) => {
       try {
         let imageLink = "";
     
@@ -61,7 +51,7 @@ export function useCreateMetadata({
           console.log(imageLink)
           setImgLink(imageLink);
           setButtonText("Image Uploaded")
-          await timer(500)
+          await timer(700)
         } else {
           imageLink = isImg;
         }
@@ -76,35 +66,62 @@ export function useCreateMetadata({
           console.log(jsonLink)
           setJsonLink(jsonLink);
           setButtonText("Metadata Uploaded")
-          await timer(500)
+          await timer(700)
         } else {
           jsonLink = isJson
         }
 
         let tx = "";
+        let mint = "";
         if (!isTx) {
           setButtonText("Confirm Transaction")
 
           // Create Project
-          tx = await sendInitTransaction(
+          const isAllStar = allocation[3] ? true : false;
+
+          const airdropValue = isAllStar ? allocation[1] + allocation[3] : allocation[1];
+          const teamValue = allocation[0];
+          const daoValue = allocation[2];
+
+          const val = await sendInitTransaction(
             wallet,
             wallet as AnchorWallet, 
             connection,
             formData,
             jsonLink,
-            setMint
+            setMint,
+            teamWallet,
+            teamValue,
+            airdropValue,
+            daoValue
           );
-          setTx(tx);
-          console.log(tx);
+          setTx(val[0]);
+          console.log(val[0]);
+          mint = val[1];
+          setButtonText("Transaction Confirmed");
+          await timer(700);
         } else {
           tx = isTx;
         }
         
-        setButtonText("Token Created");
-        await timer(1200);
+        let dbId = "";
+
+        if (!isDbId) {
+          setButtonText("Setting up Token Distribution");
+
+          const allstarAllocation = allocation[3] ? allocation[3] : BigInt(0);
+          const id = await createRecord(mint, recipients, allocation[1], allstarAllocation);
+          setDbId(id);
+          setButtonText("Token Created")
+          await timer(1200);
+        } else {
+          dbId = isDbId
+        };
+
         setPage(3);
         return tx;
       } catch(error) {
+        setButtonText("Try Again")
         return emitError(error);
       }
     },
@@ -168,7 +185,8 @@ async function uploadJson(imageLink: string, name: string, symbol: string, umi: 
 
 async function sendInitTransaction(
   wallet: WalletContextState, anchorWallet: AnchorWallet, connection: Connection, 
-  formData: FormData, uri: string, setMint: (s: string) => void
+  formData: FormContent, uri: string, setMint: (s: string) => void, teamWallet: PublicKey | null,
+  teamAllocation: bigint, airdropAllocation: bigint, daoAllocation: bigint 
 ) {
   const programId = new PublicKey("HrKLeJB6yoSWkFzVSfsg8Yi3Zs4PKZ7qqjkMz978qqZv");
   const provider = new AnchorProvider(connection, anchorWallet, {commitment: "confirmed"});
@@ -181,6 +199,8 @@ async function sendInitTransaction(
   
   const mint = Keypair.generate();
   const tokenAccount = utils.token.associatedAddress({mint: mint.publicKey, owner: anchorWallet.publicKey});
+  const teamTokenAccount = teamWallet? utils.token.associatedAddress({mint: mint.publicKey, owner: teamWallet }): null;
+
   setMint(mint.publicKey.toBase58());
   const councilMint = Keypair.generate();
 
@@ -234,13 +254,19 @@ async function sendInitTransaction(
     governance.toBytes()
   ], realmProgram);
 
+  const daoTokenAccount = utils.token.associatedAddress({mint: mint.publicKey, owner: nativeTreasury});
+
   // Initiate Project
-  const initProjectIx = await program.methods.initProject(name, symbol, uri,new BN(supply))
+  const initProjectIx = await program.methods.initProject(6, name, symbol, uri, 
+    [new BN(teamAllocation), new BN(airdropAllocation)]
+  )
     .accounts({
       config,
       project,
       mint: mint.publicKey,
       tokenAccount,
+      teamWallet,
+      teamTokenAccount,
       metadata,
       metadataProgram,
       vault
@@ -250,6 +276,7 @@ async function sendInitTransaction(
   // Initiate DAO
   const initDaoIx = await program.methods.initializeDao(
     daoName, 
+    new BN(daoAllocation),
     new BN(minToVote),
     council,
     quorum,
@@ -266,11 +293,10 @@ async function sendInitTransaction(
     governance,
     governedAccount,
     nativeTreasury,
-    project
+    project,
+    daoTokenAccount
   })
   .instruction();
-
-  // Mint Supply
 
   const {transaction, latestBlockhash} = await createTransaction({
     ixs: [initProjectIx, initDaoIx], connection, payer: wallet.publicKey as PublicKey
@@ -285,7 +311,7 @@ async function sendInitTransaction(
     'confirmed'
   );
 
-  return signature;
+  return [signature, mint.publicKey.toBase58()];
 }
 
 function emitError(error: unknown) {

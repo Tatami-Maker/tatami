@@ -64,6 +64,18 @@ export type TatamiV2 = {
           "isSigner": false
         },
         {
+          "name": "teamTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "teamWallet",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "metadata",
           "isMut": true,
           "isSigner": false
@@ -101,6 +113,10 @@ export type TatamiV2 = {
       ],
       "args": [
         {
+          "name": "decimals",
+          "type": "u8"
+        },
+        {
           "name": "name",
           "type": "string"
         },
@@ -114,7 +130,12 @@ export type TatamiV2 = {
         },
         {
           "name": "supply",
-          "type": "u64"
+          "type": {
+            "array": [
+              "u64",
+              2
+            ]
+          }
         }
       ]
     },
@@ -179,6 +200,11 @@ export type TatamiV2 = {
           "isSigner": false
         },
         {
+          "name": "daoTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "realmProgram",
           "isMut": false,
           "isSigner": false
@@ -194,6 +220,11 @@ export type TatamiV2 = {
           "isSigner": false
         },
         {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "rent",
           "isMut": false,
           "isSigner": false
@@ -203,6 +234,10 @@ export type TatamiV2 = {
         {
           "name": "name",
           "type": "string"
+        },
+        {
+          "name": "supply",
+          "type": "u64"
         },
         {
           "name": "minVoteToGovern",
@@ -388,6 +423,18 @@ export const IDL: TatamiV2 = {
           "isSigner": false
         },
         {
+          "name": "teamTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "teamWallet",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "metadata",
           "isMut": true,
           "isSigner": false
@@ -425,6 +472,10 @@ export const IDL: TatamiV2 = {
       ],
       "args": [
         {
+          "name": "decimals",
+          "type": "u8"
+        },
+        {
           "name": "name",
           "type": "string"
         },
@@ -438,7 +489,12 @@ export const IDL: TatamiV2 = {
         },
         {
           "name": "supply",
-          "type": "u64"
+          "type": {
+            "array": [
+              "u64",
+              2
+            ]
+          }
         }
       ]
     },
@@ -503,6 +559,11 @@ export const IDL: TatamiV2 = {
           "isSigner": false
         },
         {
+          "name": "daoTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "realmProgram",
           "isMut": false,
           "isSigner": false
@@ -518,6 +579,11 @@ export const IDL: TatamiV2 = {
           "isSigner": false
         },
         {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "rent",
           "isMut": false,
           "isSigner": false
@@ -527,6 +593,10 @@ export const IDL: TatamiV2 = {
         {
           "name": "name",
           "type": "string"
+        },
+        {
+          "name": "supply",
+          "type": "u64"
         },
         {
           "name": "minVoteToGovern",

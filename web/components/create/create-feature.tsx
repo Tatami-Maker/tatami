@@ -2,7 +2,7 @@
 
 import { createContext, useEffect, useState } from "react";
 import {presets} from "../dashboard/presets";
-import {createDaoAddress, FormData, FormDataError, joiValidation} from "../../utils/validation";
+import {createDaoAddress, FormDataError, joiValidation} from "../../app/utils/validation";
 import { FormDisplay } from "./form-display";
 import { FormReview } from "./form-review";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -12,16 +12,6 @@ import { FormComplete } from "./form-complete";
 import { PublicKey } from "@solana/web3.js";
 import { useDaoAvailCheck } from "./create-data-access";
 import { FormLaunch } from "./form-launch";
-
-export type FormContextType = {
-    img: Blob | undefined,
-    imgFile: File | undefined,
-    formData: FormData,
-    type: number,
-    setPage: (page: number) => void,
-    setMint: (s: string) => void,
-    mint: string
-}
 
 export const FormContext = createContext<FormContextType | null>(null);
 
@@ -56,10 +46,11 @@ export default function CreateFeature() {
     const [mint, setMint] = useState("");
 
     const [img, setImg] = useState<Blob>();
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<FormContent>({
         name: "",
         symbol: "",
-        supply: type == 5 ? BigInt(100) : BigInt(0),
+        supply: type === 5 ? BigInt(100) : BigInt(0),
+        decimals: type === 5 ? 0 : 6,
         daoName: "",
         quorum: preset.quorum,
         minToVote: preset.minToVote,
@@ -73,6 +64,7 @@ export default function CreateFeature() {
     const [imgLink, setImgLink] = useState("");
     const [jsonLink, setJsonLink] = useState("");
     const [tx, setTx] = useState("");
+    const [dbId, setDbId] = useState("");
 
     const daoAddress = new PublicKey(createDaoAddress(formData.daoName));
     const daoMutation = useDaoAvailCheck(daoAddress);
@@ -93,6 +85,11 @@ export default function CreateFeature() {
 
             case "supply":
                 if (typeof value !== "bigint") return;
+                data[property] = value;
+                break;
+
+            case "decimals":
+                if (typeof value !== "number") return;
                 data[property] = value;
                 break;
 
@@ -194,8 +191,9 @@ export default function CreateFeature() {
                     <FormComplete />
                 : 
                 page === 2 ? 
-                    <FormLaunch imgLink={imgLink} jsonLink={jsonLink} tx={tx} buttonText={buttonText}
-                    setImgLink={setImgLink} setJsonLink={setJsonLink} setTx={setTx} setButtonText={setButtonText}/>
+                    <FormLaunch imgLink={imgLink} jsonLink={jsonLink} tx={tx} dbId={dbId} buttonText={buttonText}
+                    setImgLink={setImgLink} setJsonLink={setJsonLink} setTx={setTx} setButtonText={setButtonText}
+                    setDbId={setDbId} />
                 :    
                 page === 1 ?
                     <FormReview />

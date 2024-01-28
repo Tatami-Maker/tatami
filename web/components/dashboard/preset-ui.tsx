@@ -1,13 +1,6 @@
 import { IconUsersGroup, IconCoin, IconHome, IconMoodSmile, IconHeartHandshake, IconAffiliate } from "@tabler/icons-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-type PresetBoxProps = {
-    title: string;
-    desc: string[];
-    price: number;
-    type: number;
-  }
   
 export const PresetBox = ({
     title,

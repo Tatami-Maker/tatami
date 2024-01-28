@@ -64,6 +64,18 @@
           "isSigner": false
         },
         {
+          "name": "teamTokenAccount",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "teamWallet",
+          "isMut": false,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
           "name": "metadata",
           "isMut": true,
           "isSigner": false
@@ -101,6 +113,10 @@
       ],
       "args": [
         {
+          "name": "decimals",
+          "type": "u8"
+        },
+        {
           "name": "name",
           "type": "string"
         },
@@ -114,7 +130,12 @@
         },
         {
           "name": "supply",
-          "type": "u64"
+          "type": {
+            "array": [
+              "u64",
+              2
+            ]
+          }
         }
       ]
     },
@@ -179,6 +200,11 @@
           "isSigner": false
         },
         {
+          "name": "daoTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "realmProgram",
           "isMut": false,
           "isSigner": false
@@ -194,6 +220,11 @@
           "isSigner": false
         },
         {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "rent",
           "isMut": false,
           "isSigner": false
@@ -203,6 +234,10 @@
         {
           "name": "name",
           "type": "string"
+        },
+        {
+          "name": "supply",
+          "type": "u64"
         },
         {
           "name": "minVoteToGovern",

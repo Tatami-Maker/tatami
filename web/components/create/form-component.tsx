@@ -1,39 +1,6 @@
 import Image from "next/image"
 import { ChangeEvent, ReactNode } from "react"
 
-type FormElements = {
-    title: string,
-    meta: string,
-    children: ReactNode,
-    addButton?: boolean,
-    handleFn?: (e: ChangeEvent<HTMLInputElement>) => void
-}
-
-type FormInputProps = {
-    name: string,
-    placeholder: string,
-    type: string,
-    addClass?: string,
-    value?: string | number,
-    onChange?: (e: ChangeEvent<HTMLInputElement>) => void,
-    readonly?: boolean,
-    errorMsg?: string
-}
-
-type FormButtonProps = {
-    title: string,
-    onClick?: () => void,
-    disabled?: boolean,
-    addClass?: string,
-}
-
-type DeleteButtonProps = {
-    fn: (n: number) => void,
-    index: number, 
-    title: string,
-    addClass?: string 
-}
-
 export default function FormComponent({title, meta, children, addButton, handleFn}: FormElements) {
     return (
         <div className="bg-back-200 border-[1px] border-border-form rounded-lg w-11/12  lg:w-7/12 overflow-hidden">

@@ -1,38 +1,22 @@
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from "react";
-import { FormContext, FormContextType } from "./create-feature";
+import { FormContext } from "./create-feature";
 import FormComponent, { FormAllocationTabs, FormButton, FormInput, FormMinHeading, FormTopHeading, DeleteButton} from "./form-component";
 import {useCreateMetadata} from "./create-data-access";
 import { useWallet } from "@solana/wallet-adapter-react";
 // import toast from "react-hot-toast";
 import { PublicKey } from "@solana/web3.js";
 import {Chart} from "chart.js/auto";
-import Image from "next/image";
-import {CSVToArray} from "../../utils/csv";
+import {CSVToArray} from "../../app/utils/csv";
 import { ellipsify } from "../ui/ui-layout";
-
-type FormLaunchProps = {
-    imgLink: string,
-    tx: string,
-    jsonLink: string,
-    buttonText: string
-    setImgLink: (s: string) => void,
-    setJsonLink: (s: string) => void,
-    setTx: (s: string) => void,
-    setButtonText: (s: string) => void
-}
-
-type Recipient = {
-    pubkey: string,
-    amount: bigint
-}
+import { addDecimals, removeDecimals, validateTokenString } from "@/app/utils/validation";
 
 export function FormLaunch({
-    imgLink, tx, jsonLink, buttonText, setImgLink, setJsonLink, setTx, setButtonText
+    imgLink, tx, jsonLink, buttonText, setImgLink, setJsonLink, setTx, setButtonText, dbId, setDbId
 }: FormLaunchProps) {
     const {formData, setPage, imgFile} = useContext(FormContext) as FormContextType;
     const {publicKey} = useWallet();
 
-    const {symbol, supply} = formData;
+    const {symbol, supply, decimals} = formData;
 
     const [selectList, setSelectList] = useState(false);
     const [allocation, setAllocation] = useState(formData.allocation);
@@ -104,15 +88,20 @@ export function FormLaunch({
         setImgLink,
         setJsonLink,
         setTx,
+        setDbId,
         formData,
         isImg: imgLink,
         isJson: jsonLink,
-        isTx: tx
+        isTx: tx,
+        isDbId: dbId,
     });
 
     // Create Token
     const handleCreateButton = () => {
+        const adjustedSupply = addDecimals(supply, decimals);
         const checkedAllocation = allocation.slice(0, selectList ? 4 : 3).map(n => isNaN(n) ? 0 : n);
+        const allocationInTokens = checkedAllocation.map(a => adjustedSupply * BigInt(a) / BigInt(100));
+        allocationInTokens[2] = adjustedSupply - (adjustedSupply * BigInt(100-allocation[2]) / BigInt(100));
         const sum = checkedAllocation.reduce((a,b) => a + b, 0);
 
         // Percentage check
@@ -122,7 +111,7 @@ export function FormLaunch({
         }
 
         // Team Wallet address check
-        if (checkedAllocation[0] !== 0) {
+        if (allocationInTokens[0]) {
             if (!teamWallet) {
                 setTeamWalletError("The team allocation is not zero, provide the address");
                 return;
@@ -138,15 +127,18 @@ export function FormLaunch({
 
         // The total airdrop check
         const totalAirdrop = recipients.reduce((a,b) => a + b.amount, BigInt(0)); 
-        const airdropAlloc = supply * BigInt(checkedAllocation[1]) / BigInt(100);
 
-        if (totalAirdrop !== airdropAlloc) {
+        if (totalAirdrop !== allocationInTokens[1]) {
+            console.log(totalAirdrop, allocationInTokens[1])
             setCsvError("The total tokens must match the airdrop allocation.");
-            console.log(totalAirdrop, airdropAlloc)
             return;
         }
 
-        mutation.mutate();
+        mutation.mutate({
+            teamWallet: teamWallet? new PublicKey(teamWallet) : null,
+            allocation: allocationInTokens,
+            recipients
+        });
     }
 
     //Add address button
@@ -155,7 +147,7 @@ export function FormLaunch({
 
         try {
             const newAddress = new PublicKey(currentAddress);
-            const newAmount = BigInt(currentAmount);
+            const newAmount = BigInt(validateTokenString(currentAmount, decimals));
 
             const currentRecipients = [...recipients];
 
@@ -210,7 +202,7 @@ export function FormLaunch({
                     for (let i = 0; i<participants.length; i++) {
                         try {
                             const address = new PublicKey(participants[i][0]);
-                            const token = BigInt(participants[i][1]);
+                            const token = BigInt(validateTokenString(participants[i][1], decimals));
 
                             participantAddresses.push({
                                 pubkey: address.toBase58(),
@@ -262,7 +254,8 @@ export function FormLaunch({
                     recipients.slice(0,10).map((receiver, index) => (
                         <div className="flex flex-col lg:flex-row justify-between items-center mb-2" key={index}>
                             <div className="ml-2 text-sm">
-                                {index+1}. {ellipsify(receiver.pubkey, 14)}, {receiver.amount.toString(10)} {symbol}
+                                {index+1}. {ellipsify(receiver.pubkey, 14)} -&nbsp;
+                                {removeDecimals(receiver.amount, decimals)} {symbol}
                             </div>
                             <DeleteButton fn={deleteAddress} title="Delete"  index={index}/>
                         </div>

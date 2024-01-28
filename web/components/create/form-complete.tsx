@@ -1,10 +1,10 @@
-import { createDaoAddress } from "@/utils/validation";
+import { createDaoAddress } from "@/app/utils/validation";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
 import { useCluster } from "../cluster/cluster-data-access";
 import { SocialLinks } from "../socials/social-link";
-import { FormContext, FormContextType } from "./create-feature";
+import { FormContext } from "./create-feature";
 import { FormButton } from "./form-component";
 
 export function FormComplete() {
