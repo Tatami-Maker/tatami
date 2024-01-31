@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useContext } from "react";
-import { FormContext, FormContextType } from "./create-feature";
+import { FormContext } from "./create-feature";
 import FormComponent, { FormButton, FormMinHeading, FormMinText, FormTopHeading } from "./form-component";
 
 
