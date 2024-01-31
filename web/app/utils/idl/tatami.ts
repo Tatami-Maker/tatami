@@ -59,7 +59,7 @@ export type TatamiV2 = {
           "isSigner": true
         },
         {
-          "name": "tokenAccount",
+          "name": "vaultTokenAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -127,6 +127,10 @@ export type TatamiV2 = {
         {
           "name": "uri",
           "type": "string"
+        },
+        {
+          "name": "recipients",
+          "type": "u16"
         },
         {
           "name": "supply",
@@ -263,6 +267,67 @@ export type TatamiV2 = {
       "args": []
     },
     {
+      "name": "airdropTokens",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "recipientTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "receiver",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "burnAuthority",
       "accounts": [
         {
@@ -338,6 +403,14 @@ export type TatamiV2 = {
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "recipients",
+            "type": "u16"
+          },
+          {
+            "name": "recipientsPaid",
+            "type": "u16"
           }
         ]
       }
@@ -353,6 +426,11 @@ export type TatamiV2 = {
       "code": 6001,
       "name": "InvalidQuorum",
       "msg": "quorum should be in the range of 1 and 100"
+    },
+    {
+      "code": 6002,
+      "name": "MaxRecipientsPaid",
+      "msg": "max recipients has been paid out"
     }
   ]
 };
@@ -418,7 +496,7 @@ export const IDL: TatamiV2 = {
           "isSigner": true
         },
         {
-          "name": "tokenAccount",
+          "name": "vaultTokenAccount",
           "isMut": true,
           "isSigner": false
         },
@@ -486,6 +564,10 @@ export const IDL: TatamiV2 = {
         {
           "name": "uri",
           "type": "string"
+        },
+        {
+          "name": "recipients",
+          "type": "u16"
         },
         {
           "name": "supply",
@@ -622,6 +704,67 @@ export const IDL: TatamiV2 = {
       "args": []
     },
     {
+      "name": "airdropTokens",
+      "accounts": [
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "project",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "recipientTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "receiver",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "burnAuthority",
       "accounts": [
         {
@@ -697,6 +840,14 @@ export const IDL: TatamiV2 = {
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "recipients",
+            "type": "u16"
+          },
+          {
+            "name": "recipientsPaid",
+            "type": "u16"
           }
         ]
       }
@@ -712,6 +863,11 @@ export const IDL: TatamiV2 = {
       "code": 6001,
       "name": "InvalidQuorum",
       "msg": "quorum should be in the range of 1 and 100"
+    },
+    {
+      "code": 6002,
+      "name": "MaxRecipientsPaid",
+      "msg": "max recipients has been paid out"
     }
   ]
 };

@@ -1,6 +1,7 @@
-import mongoose from 'mongoose'
+import * as mongoose from 'mongoose'
+import {Model, Document, Schema, Types} from 'mongoose';
 
-export interface Tokens extends mongoose.Document {
+export interface Tokens extends Document {
   mint: string
   allstar: boolean
   airdropTokens: bigint
@@ -9,7 +10,7 @@ export interface Tokens extends mongoose.Document {
   recipientsTokens: bigint[] 
 }
 
-const TokenSchema = new mongoose.Schema<Tokens>({
+const TokenSchema = new Schema<Tokens>({
   mint: {
     type: String,
     required: true,
@@ -33,4 +34,4 @@ const TokenSchema = new mongoose.Schema<Tokens>({
   }
 })
 
-export default mongoose.models.Token || mongoose.model<Tokens>('Token', TokenSchema)
+export default mongoose.models.Token as Model<Tokens, {}, {}, {}, Document<unknown, {}, Tokens> & Tokens & { _id: Types.ObjectId; }, any> || mongoose.model<Tokens>('Token', TokenSchema)

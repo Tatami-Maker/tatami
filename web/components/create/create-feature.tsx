@@ -149,6 +149,7 @@ export default function CreateFeature() {
 
             return;
         } else {
+            console.log(formData.supply)
             if (formData.supply < BigInt(1)) {
                 errors.supply = "The supply can't be lower than 1";
                 setFormError(errors);

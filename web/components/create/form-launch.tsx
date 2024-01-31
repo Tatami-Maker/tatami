@@ -8,7 +8,7 @@ import { PublicKey } from "@solana/web3.js";
 import {Chart} from "chart.js/auto";
 import {CSVToArray} from "../../app/utils/csv";
 import { ellipsify } from "../ui/ui-layout";
-import { addDecimals, removeDecimals, validateTokenString } from "@/app/utils/validation";
+import { addDecimals, removeDecimals, removeDecimalsNum, validateTokenString } from "@/app/utils/validation";
 
 export function FormLaunch({
     imgLink, tx, jsonLink, buttonText, setImgLink, setJsonLink, setTx, setButtonText, dbId, setDbId
@@ -126,10 +126,16 @@ export function FormLaunch({
         }
 
         // The total airdrop check
-        const totalAirdrop = recipients.reduce((a,b) => a + b.amount, BigInt(0)); 
+        const totalAirdrop: bigint = recipients.reduce((a,b) => a + b.amount, BigInt(0)); 
+        const totalAirdropWhole = removeDecimalsNum(totalAirdrop, decimals);
+        const airdropRatio = removeDecimalsNum(allocationInTokens[1], decimals);
+        const lowerRange = airdropRatio - BigInt(50);
+        const upperRange = airdropRatio + BigInt(50);
 
-        if (totalAirdrop !== allocationInTokens[1]) {
-            console.log(totalAirdrop, allocationInTokens[1])
+        if (totalAirdropWhole >= lowerRange && totalAirdropWhole <= upperRange) {
+            allocationInTokens[1] = totalAirdrop
+        } else {
+            console.log(removeDecimalsNum(totalAirdrop, decimals), removeDecimalsNum(allocationInTokens[1], decimals))
             setCsvError("The total tokens must match the airdrop allocation.");
             return;
         }

@@ -111,3 +111,12 @@ type Preset = {
     quorum: number,
     allocation: number[]
 }
+
+type TokenRecord = {
+    mint: string | undefined,
+    allstar: boolean | undefined,
+    allstarTokens: bigint | undefined,
+    recipients: string[] | undefined,
+    recipientsTokens: bigint[] | undefined,
+    airdropTokens: bigint | undefined
+}

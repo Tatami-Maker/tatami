@@ -20,7 +20,7 @@ export const joiValidation = (data: FormContent) => {
         minToVote: Joi.number().integer().min(1).required(),
         voteDuration: Joi.number().integer().min(1).required(),
         council: Joi.bool().required(),
-        allocation: Joi.array().items(Joi.number()).length(3)
+        allocation: Joi.array().items(Joi.number()).length(4)
     });
 
     return schema.validate(dataAny);
@@ -63,4 +63,9 @@ export const addDecimals = (value: bigint, decimals: number) => {
 export const removeDecimals = (value: bigint, decimals: number) => {
     const str = value.toString(10);
     return str.slice(0, str.length-decimals) + "." + str.slice(str.length-decimals);
+}
+
+export const removeDecimalsNum = (value: bigint, decimals: number) => {
+    return value / BigInt(Math.pow(10, decimals));
+
 }

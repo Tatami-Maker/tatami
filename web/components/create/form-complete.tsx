@@ -17,14 +17,17 @@ export function FormComplete() {
                 <Image src="/coins.png" width={160} height={160} alt="coins" className="mt-12 md:mt-24"/>
                 <h2 className="text-3xl font-semibold text-white my-2">Congratulations!</h2>
                 <h4 className="text-xl font-semibold text-secondary-text">{formData.name} has been created</h4>
-                <div className="my-4">
+                <div className="my-4 flex flex-col md:flex-row items-center gap-2 justify-evenly">
                     <Link href={`https://solscan.io/account/${mint}?cluster=${cluster.network}`} target="_blank" 
                       rel="noopener noreferrer" passHref>
-                        <FormButton title="View Token" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] py-3"/>
+                        <FormButton title="View Token" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] py-3 px-8"/>
                     </Link>
                     <Link href={`https://app.realms.today/dao/${createDaoAddress(formData.daoName)}?cluster=${cluster.network}`} 
                       target="_blank" rel="noopener noreferrer" passHref>
-                        <FormButton title="View DAO" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] ml-4 py-3"/>
+                        <FormButton title="View DAO" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] ml-4 py-3 px-8"/>
+                    </Link>
+                    <Link href={`/airdrop/${mint}`} target="_blank" rel="noopener noreferrer" passHref>
+                        <FormButton title="Airdrop Tokens" addClass="border-[1px] border-[#2C2C5A] bg-[#1E2043] ml-4 py-3 px-8"/>
                     </Link>
                 </div>
             </div>

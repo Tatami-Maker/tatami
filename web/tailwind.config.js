@@ -20,7 +20,7 @@ module.exports = {
         'border-main': '#212139',
         'secondary-text': '#9393A9',
         'golden-100': '#936100',
-        'golden-200': '#F3BC51'
+        'golden-200': '#F3BC51',
       }
     },
   },

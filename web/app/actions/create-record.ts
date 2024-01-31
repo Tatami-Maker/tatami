@@ -1,7 +1,7 @@
 "use server"
 
 import dbConnect from "../lib/db"
-import Token from "../models/token";
+import Token from "../models/token.model";
 
 export const createRecord = async(
     mint: string,
@@ -14,7 +14,6 @@ export const createRecord = async(
     const allstar = allstarAllocation ? true : false;
     const recipientsAddresses = recipients.map(r => r.pubkey)
     const recipientsTokens = recipients.map(r => r.amount);
-
 
     const token = await Token.create(
         {

@@ -15,13 +15,13 @@ import { createGenericFileFromBrowserFile, createGenericFileFromJson, Umi } from
 import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters';
 import { bundlrUploader } from '@metaplex-foundation/umi-uploader-bundlr';
 import { AnchorProvider, BN, Program, utils } from '@coral-xyz/anchor';
-import idl from "../../app/utils/idl/tatami.json";
-import {TatamiV2} from "../../app/utils/idl/tatami";
 import { useTransactionToast } from '../ui/ui-layout';
 import { useContext } from 'react';
 import { FormContext } from './create-feature';
 import { REALMS_PROGRAM_ID } from '@/app/utils/constants';
 import { createRecord } from '@/app/actions/create-record';
+import { generateProgram } from '@/app/utils/anchor';
+import allstarList from "@/app/utils/allstar/list";
 
 export function useCreateMetadata({
   img, address, setButtonText, setImgLink, setJsonLink, setTx, setDbId, formData, isImg, isJson, isTx, isDbId
@@ -82,6 +82,7 @@ export function useCreateMetadata({
           const airdropValue = isAllStar ? allocation[1] + allocation[3] : allocation[1];
           const teamValue = allocation[0];
           const daoValue = allocation[2];
+          const recipientCount = isAllStar ? recipients.length + allstarList.length :  recipients.length;
 
           const val = await sendInitTransaction(
             wallet,
@@ -93,8 +94,10 @@ export function useCreateMetadata({
             teamWallet,
             teamValue,
             airdropValue,
-            daoValue
+            daoValue,
+            recipientCount
           );
+
           setTx(val[0]);
           console.log(val[0]);
           mint = val[1];
@@ -111,6 +114,7 @@ export function useCreateMetadata({
 
           const allstarAllocation = allocation[3] ? allocation[3] : BigInt(0);
           const id = await createRecord(mint, recipients, allocation[1], allstarAllocation);
+          dbId = id;
           setDbId(id);
           setButtonText("Token Created")
           await timer(1200);
@@ -186,11 +190,11 @@ async function uploadJson(imageLink: string, name: string, symbol: string, umi: 
 async function sendInitTransaction(
   wallet: WalletContextState, anchorWallet: AnchorWallet, connection: Connection, 
   formData: FormContent, uri: string, setMint: (s: string) => void, teamWallet: PublicKey | null,
-  teamAllocation: bigint, airdropAllocation: bigint, daoAllocation: bigint 
+  teamAllocation: bigint, airdropAllocation: bigint, daoAllocation: bigint, recipientCount: number 
 ) {
-  const programId = new PublicKey("HrKLeJB6yoSWkFzVSfsg8Yi3Zs4PKZ7qqjkMz978qqZv");
-  const provider = new AnchorProvider(connection, anchorWallet, {commitment: "confirmed"});
-  const program = new Program<TatamiV2>(idl as TatamiV2, programId, provider);
+  const program = generateProgram(connection, anchorWallet);
+  const programId = program.programId;
+  
   const realmProgram = REALMS_PROGRAM_ID;
   const metadataProgram = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
   
@@ -198,7 +202,7 @@ async function sendInitTransaction(
   const [vault] = PublicKey.findProgramAddressSync([Buffer.from("tatami-vault")], programId);
   
   const mint = Keypair.generate();
-  const tokenAccount = utils.token.associatedAddress({mint: mint.publicKey, owner: anchorWallet.publicKey});
+  const vaultTokenAccount = utils.token.associatedAddress({mint: mint.publicKey, owner: vault});
   const teamTokenAccount = teamWallet? utils.token.associatedAddress({mint: mint.publicKey, owner: teamWallet }): null;
 
   setMint(mint.publicKey.toBase58());
@@ -257,14 +261,14 @@ async function sendInitTransaction(
   const daoTokenAccount = utils.token.associatedAddress({mint: mint.publicKey, owner: nativeTreasury});
 
   // Initiate Project
-  const initProjectIx = await program.methods.initProject(6, name, symbol, uri, 
-    [new BN(teamAllocation), new BN(airdropAllocation)]
+  const initProjectIx = await program.methods.initProject(formData.decimals, name, symbol, uri, 
+    recipientCount, [new BN(teamAllocation), new BN(airdropAllocation)]
   )
     .accounts({
       config,
       project,
       mint: mint.publicKey,
-      tokenAccount,
+      vaultTokenAccount,
       teamWallet,
       teamTokenAccount,
       metadata,
@@ -306,6 +310,7 @@ async function sendInitTransaction(
 
   const signature = await wallet.sendTransaction(transaction, connection);
 
+  console.log(signature)
   await connection.confirmTransaction(
     { signature, ...latestBlockhash },
     'confirmed'
@@ -320,7 +325,7 @@ function emitError(error: unknown) {
   return error;
 }
 
-async function createTransaction({
+export async function createTransaction({
   ixs,
   connection,
   payer
