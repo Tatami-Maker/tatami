@@ -14,7 +14,7 @@ export const joiValidation = (data: FormContent) => {
         name: Joi.string().min(4).max(40).required(),
         symbol: Joi.string().alphanum().min(2).max(8).required(),
         supply: Joi.string().required(),
-        decimals: Joi.number().required().min(1).max(16),
+        decimals: Joi.number().required().min(0).max(16),
         daoName: Joi.string().min(4).max(40).required(),
         quorum: Joi.number().integer().min(1).max(100).required(),
         minToVote: Joi.number().integer().min(1).required(),
