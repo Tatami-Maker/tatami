@@ -9,6 +9,7 @@ import {Chart} from "chart.js/auto";
 import {CSVToArray} from "../../app/utils/csv";
 import { ellipsify } from "../ui/ui-layout";
 import { addDecimals, removeDecimals, removeDecimalsNum, validateTokenString } from "@/app/utils/validation";
+import allstarList from "@/app/utils/allstar/list";
 
 export function FormLaunch({
     imgLink, tx, jsonLink, buttonText, setImgLink, setJsonLink, setTx, setButtonText, dbId, setDbId
@@ -303,6 +304,11 @@ export function FormLaunch({
                             <li key={2}>Recent transactions in the last month</li>
                         </ul>
                     </div>
+                    <p className="text-sm mt-4 font-normal ml-2">{
+                        selectList ? 
+                            `${allstarList.length} allstars added to the airdrop list. Allocate tokens to the Allstar list using the form below.` 
+                        : ""}
+                    </p>
                 </FormComponent>
             
                 <FormComponent title="Distribution Amounts" meta="Select who and how much people recieve">
@@ -310,19 +316,19 @@ export function FormLaunch({
                         <div className="canvas-div"></div>
                     </div>
                     <hr className='border-[#2C2C5A] border-b-[1px] my-3'/>
-                <div className="flex flex-col items-center my-5 gap-4">
-                    {allocationTabs.slice(0, selectList ? 4 : 3).map((tab, tabIx) => (
-                        <FormAllocationTabs 
-                            total={supply}
-                            tabName={tab}
-                            tabIx={tabIx} 
-                            tabVal={allocation[tabIx]} 
-                            changeTabVal={updateAllocation} 
-                            key={tabIx}
-                        />
-                    ))}
-                </div>
-                <p className="text-[#cc3300] text-sm mt-2 font-normal ml-4">{allocError}</p>
+                    <div className="flex flex-col items-center my-5 gap-4">
+                        {allocationTabs.slice(0, selectList ? 4 : 3).map((tab, tabIx) => (
+                            <FormAllocationTabs 
+                                total={supply}
+                                tabName={tab}
+                                tabIx={tabIx} 
+                                tabVal={allocation[tabIx]} 
+                                changeTabVal={updateAllocation} 
+                                key={tabIx}
+                            />
+                        ))}
+                    </div>
+                    <p className="text-[#cc3300] text-sm mt-2 font-normal ml-4">{allocError}</p>
 
                 </FormComponent>
 
