@@ -201,7 +201,10 @@ export function FormLaunch({
                     e.target.value = "";   
                     
                     const participants = CSVToArray(fileContent);
-                    participants.pop()
+
+                    if (!participants[participants.length-1][0]) {
+                        participants.pop()
+                    }
                     
                     const participantAddresses: Recipient[] = [];
 
